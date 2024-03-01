@@ -1,0 +1,40 @@
+# Package Overview
+package_name: 
+
+# Data Files
+training_data_file: 
+test_data_file: 
+
+# Variables
+target: "Lung Cancer Occurrrence"
+
+# set train/test split
+test_size: 0.1
+
+# to set the random seed
+random_state: 2024
+
+pipeline_name: 
+pipeline_save_file: 
+
+
+CATERGORICAL_FEATURES:
+  - "Gender"
+  - "COPD History"
+  - "Genetic Markers"
+  - "Air Pollution Exposure"
+  - "Taken Bronchodilators"
+  - "Frequency of Tiredness"
+  - "Dominant Hand"
+
+NUMERICAL_FEATURES:
+  - "Age"
+  - "Last Weight"
+  - "Current Weight"
+
+SPECIAL_FORMAT_FEATURES:
+  - "Start Smoking"
+  - "Stop Smoking"
+
+DROP_FEATURES:
+  - "ID"

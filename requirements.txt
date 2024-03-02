@@ -1,0 +1,22 @@
+## Basic Requirements
+ipykernel
+ipywidgets
+python-dateutil
+pandas
+numpy
+matplotlib
+seaborn
+
+## Model Development/Package
+feature-engine
+scikit-learn
+scipy
+xgboost
+torch
+
+## testing
+pytest
+
+## validation
+pydantic
+strictyaml

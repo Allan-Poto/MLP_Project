@@ -1,40 +1,52 @@
-# Package Overview
-package_name: 
+## DATA
+# DATA PATH
+DATA: lung_cancer.db
 
-# Data Files
-training_data_file: 
-test_data_file: 
-
-# Variables
-target: "Lung Cancer Occurrrence"
-
-# set train/test split
-test_size: 0.1
-
-# to set the random seed
-random_state: 2024
-
-pipeline_name: 
-pipeline_save_file: 
-
+# VARIABLES AND FEATURES
+TARGET_VARIABLE: Lung Cancer Occurrence
 
 CATERGORICAL_FEATURES:
-  - "Gender"
-  - "COPD History"
-  - "Genetic Markers"
-  - "Air Pollution Exposure"
-  - "Taken Bronchodilators"
-  - "Frequency of Tiredness"
-  - "Dominant Hand"
+  - 'Gender'
+  - 'COPD History'
+  - 'Genetic Markers'
+  - 'Air Pollution Exposure'
+  - 'Taken Bronchodilators'
+  - 'Frequency of Tiredness'
+  - 'Dominant Hand'
 
 NUMERICAL_FEATURES:
-  - "Age"
-  - "Last Weight"
-  - "Current Weight"
-
-SPECIAL_FORMAT_FEATURES:
-  - "Start Smoking"
-  - "Stop Smoking"
+  - 'Age'
+  - 'Last Weight'
+  - 'Current Weight'
 
 DROP_FEATURES:
-  - "ID"
+  - 'ID'
+  - 'Start Smoking'
+  - 'Stop Smoking'
+
+## IMPUTATION
+IMPUTE_MEDIAN: 
+ - 'Age'
+
+IMPUTE_MODE:
+  - 'Gender'
+  - 'Genetic Markers'
+  - 'Air Pollution Exposure'
+  - 'Frequency of Tiredness'
+  - 'Dominant Hand'
+
+IMPUTE_REFERENCE:
+  - - 'Current Weight'
+    - 'Last Weight'
+  - - 'COPD History'
+    - 'Taken Bronchodilators'
+
+## MODELLING
+# TRAIN_VALIDATE_TEST_SPLIT SIZE
+TEST_SIZE: 0.1
+VALIDATION_SIZE: 0.2
+
+# FIX SEED
+SEED: 2024
+
+# HYPERPARAMETERS

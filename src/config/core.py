@@ -16,6 +16,8 @@ class ModelConfig(BaseModel):
     """
     # Data Processing
     DATA: str
+    QUERY: str
+    MODEL_VERSION: str
     TARGET_VARIABLE: str
     CATEGORICAL_FEATURES: List[str]
     NUMERICAL_FEATURES: List[str]

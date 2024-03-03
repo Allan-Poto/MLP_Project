@@ -1,6 +1,8 @@
 ## DATA
 # DATA PATH
 DATA: lung_cancer.db
+QUERY: SELECT * FROM lung_cancer
+MODEL_VERSION: '01'
 
 # VARIABLES AND FEATURES
 TARGET_VARIABLE: Lung Cancer Occurrence
@@ -23,12 +25,12 @@ DROP_FEATURES:
   - 'ID'
   - 'Start Smoking'
   - 'Stop Smoking'
-  - 'Last Weight'
   - 'Current Weight'
+  - 'Last Weight'
 
 ## IMPUTATION
 IMPUTE_MEDIAN: 
- - 'Age'
+  - 'Age'
 
 IMPUTE_MODE:
   - 'Gender'

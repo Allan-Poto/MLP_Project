@@ -20,9 +20,6 @@ class BasicCleaning(BaseEstimator, TransformerMixin):
 	def transform(self, X: pd.DataFrame):
 		X = X.copy()
 
-		# Duplicates
-		X = X.drop_duplicates(keep="first")
-
 		# Numerical Variables
 		X["Age"] = X["Age"].abs()
 		X["Current Weight"] = X["Current Weight"].abs()
@@ -30,7 +27,7 @@ class BasicCleaning(BaseEstimator, TransformerMixin):
 
 		# Categorical Variables
 		X["Gender"] = [gender.lower().strip() if gender != "NAN" else None for gender in X["Gender"]]
-		X["COPD History"] = [copd.lower().strip() if copd is not None else copd for copd in X["COPD"]]
+		X["COPD History"] = [copd.lower().strip() if copd is not None else copd for copd in X["COPD History"]]
 		X["Taken Bronchodilators"] = [tb.lower().strip() if tb is not None else tb for tb in X["Taken Bronchodilators"]]
 		X["Genetic Markers"] = [gm.lower().strip() if gm is not None else gm for gm in X["Genetic Markers"]]
 		X["Air Pollution Exposure"] = [ape.lower().strip() if ape is not None else ape for ape in X["Air Pollution Exposure"]]
@@ -40,6 +37,7 @@ class BasicCleaning(BaseEstimator, TransformerMixin):
 		## Other Variables
 		X["Start Smoking"] = [sts.lower().strip() if sts is not None else sts for sts in X["Start Smoking"]]
 		X["Stop Smoking"] = [sps.lower().strip() if sps is not None else sps for sps in X["Stop Smoking"]]
+		print(f'After Cleaning: {len(X)}')
 		return X
 
 
@@ -84,10 +82,8 @@ class ReferenceImputer(BaseEstimator, TransformerMixin):
 	def transform(self, X: pd.DataFrame):
 		X = X.copy()
 		X = X.replace(np.nan, None)
-		col1= X[self.var1].copy()
-		col2= X[self.var2].copy()
 		
-		for i in range(len(col1)):
+		for i in X.index:
 			if X.loc[i, self.var1] is None:
 				if X.loc[i, self.var2] is not None:
 					X.loc[i, self.var1] = X.loc[i, self.var2]
@@ -118,7 +114,6 @@ class FeatureCreator(BaseEstimator, TransformerMixin):
 
 		# WEIGHT
 		X["Weight Change"] = X["Current Weight"] - X["Last Weight"]
-		X = X.drop(["Current Weight", "Last Weight"], axis=1)
 		
 		# SMOKING
 		mapping = {"not applicable": 0, "still smoking": CURR_DATE.year}
@@ -142,5 +137,24 @@ class FeatureCreator(BaseEstimator, TransformerMixin):
 				CAT_SMOKER.append("Long Term")
 
 		X["Cat Smoker"] = CAT_SMOKER
+		
+		print(f'After Feature Creation: {len(X)}')
+		return X
+	
+class FeatureDropper(BaseEstimator, TransformerMixin):
+	"""
+	Creates the engineered features required and drop the
+	columns used to prevent multicollinearity
+	"""
+	def __init__(self, drop_vars: List[str]):
+		self.drop_vars = drop_vars
+
+	def fit(self, X: pd.DataFrame, y: pd.Series = None):
+		return self
+
+	def transform(self, X: pd.DataFrame):
+		X = X.copy()
+		X = X.drop(self.drop_vars,axis=1)
+		print(f'After feature dropping: {len(X)}')
 
 		return X

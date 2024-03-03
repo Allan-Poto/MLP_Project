@@ -6,6 +6,7 @@ pandas
 numpy
 matplotlib
 seaborn
+yaml
 
 ## Model Development/Package
 feature-engine

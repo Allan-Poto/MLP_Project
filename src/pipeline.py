@@ -8,6 +8,11 @@ from lightgbm import LGBMClassifier
 from config.core import config
 from processing import feateng
 
+MODEL_LIST = ["LGBMClassifier", "", ""]
+
+if config.MODEL_SELECTION not in MODEL_LIST:
+	raise ValueError(f'Available models are: {MODEL_LIST}. To continue, add your model to MODEL_LIST in pipeline.py')
+
 pp_pipeline = Pipeline(
 	[
 		(
@@ -55,9 +60,15 @@ pp_pipeline = Pipeline(
 ec_pipeline = Pipeline(
 	[
 		(
-			"encode",
+			"nominal_encode",
+			ce.OneHotEncoder(
+				variables=config.NOMINAL_CATEGORICAL
+			)
+		),
+		(
+			"ordinal_encode",
 			ce.OrdinalEncoder(
-				variables=config.ENCODING_CATEGORICAL
+				variables=config.ORDINAL_CATEGORICAL
 			)
 		)
 	]
@@ -71,53 +82,104 @@ fs_pipeline = Pipeline(
 				drop_vars=config.DROP_FEATURES
 			)
 
+		),
+		(
+			"constant", 
+			sel.DropConstantFeatures()
+		),
+		(
+			"duplicates", 
+			sel.DropDuplicateFeatures()
+		),
+		(
+			"corr",
+			sel.SmartCorrelatedSelection(
+			selection_method="model_performance",
+			estimator=DecisionTreeRegressor(
+				random_state=config.SEED
+			),
+			scoring="neg_mean_squared_error",
+			),
 		)
 	]
 )
 
-# fs_pipeline = Pipeline(
-#     [
-# 		(
-# 			"drop",
-# 			feateng.FeatureDropper(
-# 				drop_vars=config.DROP_FEATURES
-# 			)
-
-# 		),
-# 		(
-# 			"constant", 
-# 			sel.DropConstantFeatures()
-# 		),
-# 		(
-# 			"duplicates", 
-# 			sel.DropDuplicateFeatures()
-# 		),
-# 		(
-# 			"corr",
-# 			sel.SmartCorrelatedSelection(
-# 			selection_method="model_performance",
-# 			estimator=DecisionTreeRegressor(
-# 				random_state=config.SEED
-# 			),
-# 			scoring="neg_mean_squared_error",
-# 			),
-# 		),
-#     ]
-# )
-
-total_pipeline = Pipeline(
-	[("pp", pp_pipeline), ("fs", fs_pipeline), ("ec", ec_pipeline)]
+processing_pipeline = Pipeline(
+	[("pp", pp_pipeline), ("ec", ec_pipeline), ("fs", fs_pipeline)]
 )
 
+if config.MODEL_SELECTION == "LGBMClassifier":
+	tuning_pipeline = Pipeline(
+		[
+			("total", processing_pipeline),
+			(
+				"model",
+				LGBMClassifier(
+					objective="binary",
+					boosting_type="gbdt",
+					random_state=config.SEED
+				)
+			)
+		]
+	)
 
-model_pipeline = Pipeline(
-	[
-		("total", total_pipeline),
-		(
-			"model",
-			LGBMClassifier(
-				random_state=config.SEED,
-			),
-		),
-	]
-)
+	model_pipeline = Pipeline(
+		[
+			("total", processing_pipeline),
+			(
+				"model",
+				LGBMClassifier(
+					objective="binary",
+					boosting_type="gbdt",
+					**config.LGBM_STR_HPARAMS,
+					**config.LGBM_INT_HPARAMS,
+					**config.LGBM_FLOAT_HPARAMS,
+					random_state=config.SEED
+				),
+			)
+		]
+	)
+
+elif config.MODEL_SELECTION == "":
+	tuning_pipeline = Pipeline(
+		[
+			("total", processing_pipeline),
+			(
+				"model",
+				LGBMClassifier()
+			)
+		]
+	)
+
+	model_pipeline = Pipeline(
+		[
+			("total", processing_pipeline),
+			(
+				"model",
+				LGBMClassifier()
+			)
+		]
+	)
+
+elif config.MODEL_SELECTION == "":
+	tuning_pipeline = Pipeline(
+		[
+			("total", processing_pipeline),
+			(
+				"model",
+				LGBMClassifier()
+			)
+		]
+	)
+
+	model_pipeline = Pipeline(
+		[
+			("total", processing_pipeline),
+			(
+				"model",
+				LGBMClassifier()
+			)
+		]
+	)
+else:
+	raise ValueError(f'Available models are: {MODEL_LIST}. To continue, add your model to MODEL_LIST in pipeline.py')

@@ -2,7 +2,6 @@
 # DATA PATH
 DATA: lung_cancer.db
 QUERY: SELECT * FROM lung_cancer
-MODEL_VERSION: '01'
 
 # VARIABLES AND FEATURES
 TARGET_VARIABLE: Lung Cancer Occurrence
@@ -46,17 +45,23 @@ IMPUTE_REFERENCE:
     - 'Taken Bronchodilators'
 
 ## ENCODING
-ENCODING_CATEGORICAL:
+NOMINAL_CATEGORICAL:
   - 'Gender'
   - 'COPD History'
   - 'Genetic Markers'
-  - 'Air Pollution Exposure'
   - 'Taken Bronchodilators'
-  - 'Frequency of Tiredness'
   - 'Dominant Hand'
+
+ORDINAL_CATEGORICAL:
+  - 'Air Pollution Exposure'
+  - 'Frequency of Tiredness'
   - 'Cat Smoker'
 
 ## MODELLING
+# MODEL
+MODEL_SELECTION: 'LGBMClassifier'
+MODEL_VERSION: '01'
+
 # TRAIN_VALIDATE_TEST_SPLIT SIZE
 TEST_SIZE: 0.1
 VALIDATION_SIZE: 0.2
@@ -65,3 +70,31 @@ VALIDATION_SIZE: 0.2
 SEED: 2024
 
 # HYPERPARAMETERS
+CV: 5
+TUNING_GRID:
+  model__learning_rate:
+    - 0.001
+    - 0.003
+    - 0.1
+  model__n_estimators: 
+    - 50
+    - 250
+    - 500
+  model__num_leaves:
+    - 5
+    - 15
+    - 31
+
+LGBM_STR_HPARAMS:
+  metric: 'binary_logloss'
+
+LGBM_INT_HPARAMS:
+  n_estimators: 500
+  bagging_freq: 1
+  num_leaves: 6
+  min_data_in_leaf: 2
+
+LGBM_FLOAT_HPARAMS:
+  learning_rate: 0.1
+  subsample: 0.8
+  colsample_bytree: 0.7

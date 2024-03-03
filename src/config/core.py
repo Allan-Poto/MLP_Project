@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Dict
 from strictyaml import load
 from pydantic import BaseModel
 
@@ -17,7 +17,6 @@ class ModelConfig(BaseModel):
     # Data Processing
     DATA: str
     QUERY: str
-    MODEL_VERSION: str
     TARGET_VARIABLE: str
     CATEGORICAL_FEATURES: List[str]
     NUMERICAL_FEATURES: List[str]
@@ -25,13 +24,22 @@ class ModelConfig(BaseModel):
     IMPUTE_MEDIAN: List[str]
     IMPUTE_MODE: List[str]
     IMPUTE_REFERENCE: List[List[str]]
-    ENCODING_CATEGORICAL: List[str]
+    NOMINAL_CATEGORICAL: List[str]
+    ORDINAL_CATEGORICAL: List[str]
 
     # Training Model
+    MODEL_SELECTION: str
+    MODEL_VERSION: str
     TEST_SIZE: float
     VALIDATION_SIZE: float
     SEED: int
-#    HYPERPARAMS: List[]
+    # HYPERPARAMS
+    CV: int
+    TUNING_GRID: Dict[str, List[float]]
+    LGBM_STR_HPARAMS: Dict[str, str]
+    LGBM_INT_HPARAMS: Dict[str, int]
+    LGBM_FLOAT_HPARAMS: Dict[str, float]
+
 
 def fetch_config_from_yaml():
     """

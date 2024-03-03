@@ -1,0 +1,67 @@
+## DATA
+# DATA PATH
+DATA: lung_cancer.db
+QUERY: SELECT * FROM lung_cancer
+MODEL_VERSION: '01'
+
+# VARIABLES AND FEATURES
+TARGET_VARIABLE: Lung Cancer Occurrence
+
+CATEGORICAL_FEATURES:
+  - 'Gender'
+  - 'COPD History'
+  - 'Genetic Markers'
+  - 'Air Pollution Exposure'
+  - 'Taken Bronchodilators'
+  - 'Frequency of Tiredness'
+  - 'Dominant Hand'
+
+NUMERICAL_FEATURES:
+  - 'Age'
+  - 'Last Weight'
+  - 'Current Weight'
+
+DROP_FEATURES:
+  - 'ID'
+  - 'Start Smoking'
+  - 'Stop Smoking'
+  - 'Current Weight'
+  - 'Last Weight'
+
+## IMPUTATION
+IMPUTE_MEDIAN: 
+  - 'Age'
+
+IMPUTE_MODE:
+  - 'Gender'
+  - 'Genetic Markers'
+  - 'Air Pollution Exposure'
+  - 'Frequency of Tiredness'
+  - 'Dominant Hand'
+
+IMPUTE_REFERENCE:
+  - - 'Current Weight'
+    - 'Last Weight'
+  - - 'COPD History'
+    - 'Taken Bronchodilators'
+
+## ENCODING
+ENCODING_CATEGORICAL:
+  - 'Gender'
+  - 'COPD History'
+  - 'Genetic Markers'
+  - 'Air Pollution Exposure'
+  - 'Taken Bronchodilators'
+  - 'Frequency of Tiredness'
+  - 'Dominant Hand'
+  - 'Cat Smoker'
+
+## MODELLING
+# TRAIN_VALIDATE_TEST_SPLIT SIZE
+TEST_SIZE: 0.1
+VALIDATION_SIZE: 0.2
+
+# FIX SEED
+SEED: 2024
+
+# HYPERPARAMETERS

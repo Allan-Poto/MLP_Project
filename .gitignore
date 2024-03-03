@@ -1,4 +1,6 @@
 *.venv
-data/*.db
+*.db
 *.pdf
 *.DS_Store
+*__pycache__
+*.pkl

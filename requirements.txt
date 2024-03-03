@@ -11,8 +11,8 @@ seaborn
 feature-engine
 scikit-learn
 scipy
-xgboost
-torch
+# xgboost
+# torch
 
 ## testing
 pytest

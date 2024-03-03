@@ -17,12 +17,13 @@ class ModelConfig(BaseModel):
     # Data Processing
     DATA: str
     TARGET_VARIABLE: str
-    CATERGORICAL_FEATURES: List[str]
+    CATEGORICAL_FEATURES: List[str]
     NUMERICAL_FEATURES: List[str]
     DROP_FEATURES: List[str]   
     IMPUTE_MEDIAN: List[str]
     IMPUTE_MODE: List[str]
-    IMPUTE_REFERENCE: List[str]
+    IMPUTE_REFERENCE: List[List[str]]
+    ENCODING_CATEGORICAL: List[str]
 
     # Training Model
     TEST_SIZE: float
@@ -41,7 +42,7 @@ def fetch_config_from_yaml():
 
     raise OSError(f"Config file not found at : {CONFIG_FILE_PATH}")
 
-config = fetch_config_from_yaml()
+config = ModelConfig(**(fetch_config_from_yaml()).data)
 
 if __name__ == "__main__":
     print(config)

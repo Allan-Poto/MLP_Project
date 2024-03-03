@@ -22,7 +22,7 @@ def save_pipeline(model_file: Pipeline):
     """
     Save a pipeline in the model directory
     """
-    save_file_name = f"{config.MODEL_VERSION}.pkl"
+    save_file_name = f"{config.MODEL_SELECTION}_{config.MODEL_VERSION}.pkl"
     save_path = f'{MODEL_DIR}/{save_file_name}'
 
     remove_pipelines(files_to_keep=[save_file_name])
@@ -34,7 +34,6 @@ def load_pipeline(model_file: str) -> Pipeline:
     Load a pipeline from the model directory
     """
     file_path = f'{MODEL_DIR}/{model_file}'
-    print(file_path)
     trained_model = joblib.load(filename=file_path)
     return trained_model
 

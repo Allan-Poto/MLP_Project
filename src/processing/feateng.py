@@ -26,7 +26,7 @@ class BasicCleaning(BaseEstimator, TransformerMixin):
 		X["Last Weight"] = X["Last Weight"].abs()
 
 		# Categorical Variables
-		X["Gender"] = [gender.lower().strip() if gender != "NAN" else None for gender in X["Gender"]]
+		X["Gender"] = [gender.lower().strip() if gender.lower().strip() != "nan" else None for gender in X["Gender"]]
 		X["COPD History"] = [copd.lower().strip() if copd is not None else copd for copd in X["COPD History"]]
 		X["Taken Bronchodilators"] = [tb.lower().strip() if tb is not None else tb for tb in X["Taken Bronchodilators"]]
 		X["Genetic Markers"] = [gm.lower().strip() if gm is not None else gm for gm in X["Genetic Markers"]]
@@ -37,7 +37,6 @@ class BasicCleaning(BaseEstimator, TransformerMixin):
 		## Other Variables
 		X["Start Smoking"] = [sts.lower().strip() if sts is not None else sts for sts in X["Start Smoking"]]
 		X["Stop Smoking"] = [sps.lower().strip() if sps is not None else sps for sps in X["Stop Smoking"]]
-		print(f'After Cleaning: {len(X)}')
 		return X
 
 
@@ -137,8 +136,6 @@ class FeatureCreator(BaseEstimator, TransformerMixin):
 				CAT_SMOKER.append("Long Term")
 
 		X["Cat Smoker"] = CAT_SMOKER
-		
-		print(f'After Feature Creation: {len(X)}')
 		return X
 	
 class FeatureDropper(BaseEstimator, TransformerMixin):
@@ -154,7 +151,7 @@ class FeatureDropper(BaseEstimator, TransformerMixin):
 
 	def transform(self, X: pd.DataFrame):
 		X = X.copy()
-		X = X.drop(self.drop_vars,axis=1)
-		print(f'After feature dropping: {len(X)}')
-
+		for feature in self.drop_vars:
+			if feature in X.columns:
+				X = X.drop(feature,axis=1)
 		return X

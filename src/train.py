@@ -1,9 +1,9 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-from src.config.core import config
-from src.pipeline import model_pipeline
-from src.utils import load_from_db, save_pipeline
+from config.core import config
+from pipeline import model_pipeline
+from utils import load_from_db, save_pipeline
 
 
 def train_model():
@@ -27,7 +27,7 @@ def train_model():
     model_pipeline.fit(X_train, y_train)
 
     # # # persist trained model
-    save_pipeline(pipeline=model_pipeline)
+    save_pipeline(model_file=model_pipeline)
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ import joblib
 import pandas as pd
 from sklearn.pipeline import Pipeline
 
-from src.config.core import DATA_DIR, MODEL_DIR, config
+from config.core import DATA_DIR, MODEL_DIR, config
 
 
 def load_from_db(database: str, query: str):

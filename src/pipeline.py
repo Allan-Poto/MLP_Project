@@ -5,8 +5,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeRegressor
 from lightgbm import LGBMClassifier
 
-from src.config.core import config
-from src.processing import feateng
+from config.core import config
+from processing import feateng
 
 pp_pipeline = Pipeline(
 	[

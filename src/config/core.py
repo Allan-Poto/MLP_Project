@@ -24,21 +24,50 @@ class ModelConfig(BaseModel):
     IMPUTE_MEDIAN: List[str]
     IMPUTE_MODE: List[str]
     IMPUTE_REFERENCE: List[List[str]]
+    NUMERICAL: List[str]
     NOMINAL_CATEGORICAL: List[str]
     ORDINAL_CATEGORICAL: List[str]
 
     # Training Model
+    MODEL_LIST: List[str]
     MODEL_SELECTION: str
     MODEL_VERSION: str
     TEST_SIZE: float
     VALIDATION_SIZE: float
     SEED: int
     # HYPERPARAMS
+    OPTIMIZE: bool
     CV: int
-    TUNING_GRID: Dict[str, List[float]]
+
+    # LGBM_MODEL
+#   TUNING_STR_GRID: Dict[str, List[str]]
+    LGBM_TUNING_INT_GRID: Dict[str, List[int]]
+    LGBM_TUNING_FLOAT_GRID: Dict[str, List[float]]
     LGBM_STR_HPARAMS: Dict[str, str]
     LGBM_INT_HPARAMS: Dict[str, int]
     LGBM_FLOAT_HPARAMS: Dict[str, float]
+
+    # SVC_MODEL
+    SVC_TUNING_STR_GRID: Dict[str, List[str]]
+    SVC_TUNING_FLOAT_GRID: Dict[str, List[float]]
+    SVC_STR_HPARAMS: Dict[str, str]
+    SVC_FLOAT_HPARAMS: Dict[str, float]
+
+    # MLP_MODEL
+    MLP_TUNING_STR_GRID: Dict[str, List[str]]
+    MLP_TUNING_INT_GRID: Dict[str, List[int]]
+    MLP_TUNING_FLOAT_GRID: Dict[str, List[float]]
+    MLP_STR_HPARAMS: Dict[str, str]
+    MLP_INT_HPARAMS: Dict[str, int]
+    MLP_FLOAT_HPARAMS: Dict[str, float]
+
+    # LOG_REGRESSION_MODEL
+    LOG_TUNING_STR_GRID: Dict[str, List[str]]
+    LOG_TUNING_INT_GRID: Dict[str, List[int]]
+    LOG_TUNING_FLOAT_GRID: Dict[str, List[float]]
+    LOG_STR_HPARAMS: Dict[str, str]
+    LOG_INT_HPARAMS: Dict[str, int]
+    LOG_FLOAT_HPARAMS: Dict[str, float]
 
 
 def fetch_config_from_yaml():

@@ -2,7 +2,10 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 from typing import List
+
 from sklearn.base import BaseEstimator, TransformerMixin
+# from sklearn.compose import ColumnTransformer
+# from sklearn.preprocessing import StandardScaler
 
 CURR_DATE = dt.datetime.today()
 
@@ -26,7 +29,7 @@ class BasicCleaning(BaseEstimator, TransformerMixin):
 		X["Last Weight"] = X["Last Weight"].abs()
 
 		# Categorical Variables
-		X["Gender"] = [gender.lower().strip() if gender.lower().strip() != "nan" else None for gender in X["Gender"]]
+		X["Gender"] = [gender.lower().strip() if gender.upper().strip() != "NAN" else None for gender in X["Gender"]]
 		X["COPD History"] = [copd.lower().strip() if copd is not None else copd for copd in X["COPD History"]]
 		X["Taken Bronchodilators"] = [tb.lower().strip() if tb is not None else tb for tb in X["Taken Bronchodilators"]]
 		X["Genetic Markers"] = [gm.lower().strip() if gm is not None else gm for gm in X["Genetic Markers"]]
@@ -137,7 +140,7 @@ class FeatureCreator(BaseEstimator, TransformerMixin):
 
 		X["Cat Smoker"] = CAT_SMOKER
 		return X
-	
+
 class FeatureDropper(BaseEstimator, TransformerMixin):
 	"""
 	Creates the engineered features required and drop the
@@ -155,3 +158,40 @@ class FeatureDropper(BaseEstimator, TransformerMixin):
 			if feature in X.columns:
 				X = X.drop(feature,axis=1)
 		return X
+
+class PipelineChecker(BaseEstimator, TransformerMixin):
+	"""
+	Insert when you want to check on the DataFrame at any point in the Pipeline
+	"""
+	def fit(self, X: pd.DataFrame, y: pd.Series = None):
+		return self
+	
+	def transform(self, X: pd.DataFrame):
+		X = X.copy()
+		print(X.head())
+		print(X.info())
+		
+		return X
+
+## Not working properly
+# class NumericalScaler(BaseEstimator, TransformerMixin):
+# 	"""
+# 	Apply standardscaler and transforms the output back into a dataframe 
+# 	"""
+# 	def __init__(self, variables: List[str]):
+# 		self.num_vars = variables
+
+# 	def fit(self, X: pd.DataFrame, y: pd.Series = None):
+# 		return self
+
+# 	def transform(self, X: pd.DataFrame):
+# 		X = X.copy()
+# 		colnames = X.columns.tolist()
+# 		for col in self.num_vars:
+# 			colnames.remove(col)
+# 		colnames = self.num_vars + colnames
+# 		ct = ColumnTransformer([('scaler', StandardScaler(), self.num_vars)],remainder='passthrough')
+# 		X_TRANSFORM = ct.fit_transform(X)
+# 		X = pd.DataFrame(X_TRANSFORM, columns=colnames)
+# 		print(X.info())
+# 		return X

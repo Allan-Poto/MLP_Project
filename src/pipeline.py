@@ -1,17 +1,23 @@
+# General
+from sklearn.pipeline import Pipeline
+
+# Preprocessing
 from feature_engine import encoding as ce
 from feature_engine import imputation as mdi
 from feature_engine import selection as sel
-from sklearn.pipeline import Pipeline
+
+# Models
+from sklearn.linear_model import LogisticRegression # Baseline Model
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.svm import SVC
+from sklearn.neural_network import MLPClassifier
 from lightgbm import LGBMClassifier
 
 from config.core import config
 from processing import feateng
 
-MODEL_LIST = ["LGBMClassifier", "", ""]
-
-if config.MODEL_SELECTION not in MODEL_LIST:
-	raise ValueError(f'Available models are: {MODEL_LIST}. To continue, add your model to MODEL_LIST in pipeline.py')
+if config.MODEL_SELECTION not in config.MODEL_LIST:
+	raise ValueError(f'Available models are: {config.MODEL_LIST}. To continue, add your model to MODEL_LIST in pipeline.py')
 
 pp_pipeline = Pipeline(
 	[
@@ -28,7 +34,7 @@ pp_pipeline = Pipeline(
 		(
 			"impute_mode",
 			mdi.CategoricalImputer(
-				fill_value="Missing",
+				imputation_method='frequent',
 				variables=config.IMPUTE_MODE,
 				return_object=True,
 				ignore_format=True
@@ -53,6 +59,13 @@ pp_pipeline = Pipeline(
 		(
 			"create_feature",
 			feateng.FeatureCreator()
+		),
+		(
+			"drop",
+			feateng.FeatureDropper(
+				drop_vars=config.DROP_FEATURES
+			)
+
 		)
 	]
 )
@@ -77,38 +90,71 @@ ec_pipeline = Pipeline(
 fs_pipeline = Pipeline(
 	[
 		(
-			"drop",
-			feateng.FeatureDropper(
-				drop_vars=config.DROP_FEATURES
-			)
-
-		),
-		(
-			"constant", 
-			sel.DropConstantFeatures()
-		),
-		(
 			"duplicates", 
 			sel.DropDuplicateFeatures()
 		),
 		(
 			"corr",
 			sel.SmartCorrelatedSelection(
-			selection_method="model_performance",
-			estimator=DecisionTreeRegressor(
-				random_state=config.SEED
-			),
-			scoring="neg_mean_squared_error",
+				selection_method="model_performance",
+				estimator=DecisionTreeRegressor(
+					random_state=config.SEED
+				),
+				cv=config.CV,
+				scoring="f1"
 			),
 		)
 	]
 )
 
+#When you want to check how the dataframe looks like after the processing pipeline
+check_pipeline = Pipeline(
+	[
+		(
+			"check",
+			feateng.PipelineChecker()
+		)
+	]
+)
+
+# processing_pipeline = Pipeline(
+# 	[("pp", pp_pipeline), ("ec", ec_pipeline), ("fs", fs_pipeline), ("cp", check_pipeline)]
+# )
+
 processing_pipeline = Pipeline(
 	[("pp", pp_pipeline), ("ec", ec_pipeline), ("fs", fs_pipeline)]
 )
 
-if config.MODEL_SELECTION == "LGBMClassifier":
+if config.MODEL_SELECTION == "LogisticRegression":
+	tuning_pipeline = Pipeline(
+		[
+			("total", processing_pipeline),
+			(
+				"model",
+				LogisticRegression(
+					verbose=1,
+					random_state=config.SEED
+				)
+			)
+		]
+	)
+
+	model_pipeline = Pipeline(
+		[
+			("total", processing_pipeline),
+			(
+				"model",
+				LogisticRegression(
+					verbose=1,
+					**config.LOG_STR_HPARAMS,
+					**config.LOG_INT_HPARAMS,
+					**config.LOG_FLOAT_HPARAMS,
+					random_state=config.SEED
+				)
+			)
+		]
+	)
+elif config.MODEL_SELECTION == "LGBMClassifier":
 	tuning_pipeline = Pipeline(
 		[
 			("total", processing_pipeline),
@@ -140,13 +186,17 @@ if config.MODEL_SELECTION == "LGBMClassifier":
 		]
 	)
 
-elif config.MODEL_SELECTION == "":
+
+elif config.MODEL_SELECTION == "SVC":
 	tuning_pipeline = Pipeline(
 		[
 			("total", processing_pipeline),
 			(
 				"model",
-				LGBMClassifier()
+				SVC(
+					gamma="auto",
+					verbose=True
+				)
 			)
 		]
 	)
@@ -156,18 +206,28 @@ elif config.MODEL_SELECTION == "":
 			("total", processing_pipeline),
 			(
 				"model",
-				LGBMClassifier()
+				SVC(
+					gamma="auto",
+					**config.SVC_STR_HPARAMS,
+					**config.SVC_FLOAT_HPARAMS,
+					verbose=True
+				)
 			)
 		]
 	)
 
-elif config.MODEL_SELECTION == "":
+elif config.MODEL_SELECTION == "MLPClassifier":
 	tuning_pipeline = Pipeline(
 		[
 			("total", processing_pipeline),
 			(
 				"model",
-				LGBMClassifier()
+				MLPClassifier(
+					max_iter=500,
+					verbose=True,
+					random_state=config.SEED,
+					early_stopping=True
+				)
 			)
 		]
 	)
@@ -177,9 +237,18 @@ elif config.MODEL_SELECTION == "":
 			("total", processing_pipeline),
 			(
 				"model",
-				LGBMClassifier()
+				MLPClassifier(
+					**config.MLP_STR_HPARAMS,
+					**config.MLP_INT_HPARAMS,
+					**config.MLP_FLOAT_HPARAMS,
+					max_iter=500,
+					verbose=True,
+					random_state=config.SEED,
+					early_stopping=True
+				)
 			)
 		]
 	)
+
 else:
-	raise ValueError(f'Available models are: {MODEL_LIST}. To continue, add your model to MODEL_LIST in pipeline.py')
+	raise ValueError(f'Available models are: {config.MODEL_LIST}. To continue, add your model to MODEL_LIST in pipeline.py')

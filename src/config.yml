@@ -64,12 +64,12 @@ ORDINAL_CATEGORICAL:
 
 ## MODELLING
 # MODEL
-MODEL_LIST: # Takes values [LGBMClassifier, LogisticRegression]
+MODEL_LIST: 
   - 'LogisticRegression' #Baseline Model
   - "SVC"
   - 'LGBMClassifier'
   - 'MLPClassifier'
-MODEL_SELECTION: 'LGBMClassifier' 
+MODEL_SELECTION: 'LGBMClassifier' # From MODEL_LIST above
 MODEL_VERSION: '01'
 
 # TRAIN_VALIDATE_TEST_SPLIT SIZE
@@ -79,10 +79,9 @@ VALIDATION_SIZE: 0.2
 # FIX SEED
 SEED: 2024
 
-# GENERAL HYPERPARAMETERS
-OPTIMIZE: False
+## HYPERPARAMETERS
+OPTIMIZE: False # Set to True for hyperparameter tuning, MODEL IS NOT SAVED (TODO).
 CV: 5
-
 # LGBMClassifier
 # LGBM_TUNING_STR_GRID:
 LGBM_TUNING_INT_GRID:

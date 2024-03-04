@@ -1,41 +1,56 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, f1_score, recall_score
+from sklearn.pipeline import Pipeline
 
 from config.core import config
-from utils import load_from_db, load_pipeline
+from utils import load_from_db, split_data, load_pipeline, evaluate_model
 
-pipeline_file_name = f"{config.MODEL_SELECTION}_{config.MODEL_VERSION}.pkl"
-model = load_pipeline(model_file=pipeline_file_name)
 
-def make_prediction(X_test: pd.DataFrame):
-    """
-    Make a prediction using the saved model
-    """
+def make_prediction(model: Pipeline, X_test: pd.DataFrame):
+	"""
+	Make a prediction using the saved model
 
-    predictions = model.predict(X_test)
-    results = {
-        "predictions": predictions,
-        "model": config.MODEL_SELECTION,
-        "version": config.MODEL_VERSION,
-    }
-    return results
+	Inputs:
+		1. Model Pipeline
+		2. X_test
+	
+	Output:
+		1. Dictionary with the following keys:
+			a. "predictions" : Contains the result
+			b. "model" : Type of Model used
+			c. "version" : Version of Model used
+	"""
 
+	predictions = model.predict(X_test)
+	results = {
+		"predictions": predictions,
+		"model": config.MODEL_SELECTION,
+		"version": config.MODEL_VERSION,
+	}
+	return results
 
 if __name__ == "__main__":
+	"""
+	Loads a model based on configurations and make predictions, output prediction score
 
-    # Load Data
-    data = load_from_db(config.DATA, config.QUERY)
-    data = data.drop_duplicates(keep="first")
+	TODO: Store the result in a separate location
+	"""
+	# Load Data
+	data = load_from_db(config.DATA, config.QUERY)
+	X_train, X_test, y_train, y_test = split_data(data)
 
-    # Divide train and test
-    X_train, X_test, y_train, y_test = train_test_split(
-        data[data.columns[data.columns != config.TARGET_VARIABLE]],
-        data[config.TARGET_VARIABLE],
-        test_size=config.TEST_SIZE,
-        random_state=config.SEED,
-    )
-    y_pred = make_prediction(X_test)["predictions"]
-    print(f"ACCURACY: {accuracy_score(y_test, y_pred)*100:.2f}%")
-    print(f"F1_SCORE: {f1_score(y_test, y_pred):.2f}")
-    print(f"RECALL: {recall_score(y_test, y_pred):.2f}")
+	# Load Model
+	pipeline_file_name = f"{config.MODEL_SELECTION}_{config.MODEL_VERSION}.pkl"
+	model = load_pipeline(model_file=pipeline_file_name)
+
+	# Make Predictions
+	x_pred = make_prediction(model, X_train)["predictions"]
+	y_pred = make_prediction(model, X_test)["predictions"]
+
+	# Evaluate Model
+	Training_F1_score, Testing_F1_score = evaluate_model([x_pred, y_train, y_pred, y_test], "f1score")
+	print(f"Training F1_Score: {Training_F1_score:.2f}%")
+	print(f"Testing F1_Score: {Testing_F1_score:.2f}%")
+
+	Training_recall, Testing_recall = evaluate_model([x_pred, y_train, y_pred, y_test], "recall")
+	print(f"Training Recall: {Training_recall:.2f}%")
+	print(f"Testing Recall: {Testing_recall:.2f}%")

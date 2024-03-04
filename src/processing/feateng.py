@@ -12,9 +12,8 @@ CURR_DATE = dt.datetime.today()
 class BasicCleaning(BaseEstimator, TransformerMixin):
 	"""
 	Conduct Basic Cleaning including the following:
-	1. Drop duplicated rows
-	2. Fix incorrect input like negative values
-	3. Fix string format issues
+	1. Fix incorrect input like negative values
+	2. Fix possible string formatting issues in all columns
 	"""
 
 	def fit(self, X: pd.DataFrame, y: pd.Series=None):
@@ -86,17 +85,20 @@ class ReferenceImputer(BaseEstimator, TransformerMixin):
 		X = X.replace(np.nan, None)
 		
 		for i in X.index:
+			# IF EITHER VALUE IS PRESENT, COPY OVER THE VALUE TO THE OTHER ONE
 			if X.loc[i, self.var1] is None:
 				if X.loc[i, self.var2] is not None:
 					X.loc[i, self.var1] = X.loc[i, self.var2]
 			if X.loc[i, self.var2] is None:
 				if X.loc[i, self.var1] is not None:
 					X.loc[i, self.var2] = X.loc[i, self.var1]
+			
+			# IF BOTH VALUES ARE NOT PRESENT, 
 			if X.loc[i, self.var1] is None and X.loc[i, self.var2] is None:
-				if self.channel == "weight":
+				if self.channel == "weight": # FOR WEIGHT, IMPUTE USING MEDIAN
 					X.loc[i, self.var1] = X[self.var1].median()
 					X.loc[i, self.var2] = X[self.var2].median()
-				else:
+				else: # CREATE AN ADDITIONAL LABEL CALLED UNKNOWN FOR MEDICAL
 					X.loc[i, self.var1]  = "Unknown"
 					X.loc[i, self.var2]  = "Unknown"
 		return X
@@ -143,8 +145,7 @@ class FeatureCreator(BaseEstimator, TransformerMixin):
 
 class FeatureDropper(BaseEstimator, TransformerMixin):
 	"""
-	Creates the engineered features required and drop the
-	columns used to prevent multicollinearity
+	Drop the columns as stated in configurations
 	"""
 	def __init__(self, drop_vars: List[str]):
 		self.drop_vars = drop_vars

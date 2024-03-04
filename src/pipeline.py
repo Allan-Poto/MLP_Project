@@ -226,5 +226,26 @@ elif config.MODEL_SELECTION == "MLPClassifier":
 				)
 			)
 		])
+
+# TEMPLATE FOR ADDITION OF NEW MODELS	
+# elif config.MODEL_SELECTION == {YOUR_MODEL_NAME}:
+# 	tuning_pipeline = Pipeline(
+# 		[
+# 			("total", processing_pipeline),
+# 			("model",
+# 				YOUR_MODEL(
+# 					PARAMETERS	
+# 				)
+# 			)
+# 		])
+# 	model_pipeline = Pipeline(
+# 		[
+# 			("total", processing_pipeline),
+# 			("model",
+# 				YOUR_MODEL(
+# 					PARAMETERS
+# 				)
+# 			)
+# 		])
 else:
 	raise ValueError(f'Available models are: {config.MODEL_LIST}. To continue, add your model to MODEL_LIST in pipeline.py')

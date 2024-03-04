@@ -2,7 +2,6 @@
 # DATA PATH
 DATA: lung_cancer.db
 QUERY: SELECT * FROM lung_cancer
-MODEL_VERSION: '01'
 
 # VARIABLES AND FEATURES
 TARGET_VARIABLE: Lung Cancer Occurrence
@@ -27,6 +26,7 @@ DROP_FEATURES:
   - 'Stop Smoking'
   - 'Current Weight'
   - 'Last Weight'
+  - 'Years Smoked'
 
 ## IMPUTATION
 IMPUTE_MEDIAN: 
@@ -45,18 +45,33 @@ IMPUTE_REFERENCE:
   - - 'COPD History'
     - 'Taken Bronchodilators'
 
-## ENCODING
-ENCODING_CATEGORICAL:
+## ENCODING AND SCALING
+NUMERICAL:
+  - 'Age'
+  - 'Weight Change'
+
+NOMINAL_CATEGORICAL:
   - 'Gender'
   - 'COPD History'
   - 'Genetic Markers'
-  - 'Air Pollution Exposure'
   - 'Taken Bronchodilators'
-  - 'Frequency of Tiredness'
   - 'Dominant Hand'
+
+ORDINAL_CATEGORICAL:
+  - 'Air Pollution Exposure'
+  - 'Frequency of Tiredness'
   - 'Cat Smoker'
 
 ## MODELLING
+# MODEL
+MODEL_LIST: # Takes values [LGBMClassifier, LogisticRegression]
+  - 'LogisticRegression' #Baseline Model
+  - "SVC"
+  - 'LGBMClassifier'
+  - 'MLPClassifier'
+MODEL_SELECTION: 'LGBMClassifier' 
+MODEL_VERSION: '01'
+
 # TRAIN_VALIDATE_TEST_SPLIT SIZE
 TEST_SIZE: 0.1
 VALIDATION_SIZE: 0.2
@@ -64,4 +79,128 @@ VALIDATION_SIZE: 0.2
 # FIX SEED
 SEED: 2024
 
-# HYPERPARAMETERS
+# GENERAL HYPERPARAMETERS
+OPTIMIZE: False
+CV: 5
+
+# LGBMClassifier
+# LGBM_TUNING_STR_GRID:
+LGBM_TUNING_INT_GRID:
+  model__n_estimators: 
+    - 100
+    - 500
+    - 1000
+  model__num_leaves:
+    - 6
+    - 15
+    - 31
+
+LGBM_TUNING_FLOAT_GRID:
+  model__learning_rate:
+    - 0.001
+    - 0.003
+    - 0.1
+
+LGBM_STR_HPARAMS:
+  metric: 'binary_logloss'
+
+LGBM_INT_HPARAMS:
+  n_estimators: 100
+  bagging_freq: 1
+  num_leaves: 15
+
+LGBM_FLOAT_HPARAMS:
+  learning_rate: 0.1
+
+# SVC
+SVC_TUNING_STR_GRID:
+  kernel:
+    - "poly"
+    - "rbf"
+    - "linear"
+
+SVC_TUNING_FLOAT_GRID:
+  tol:
+    - 0.0001
+    - 0.001
+    - 0.01
+  C:
+    - 1
+    - 0.5
+    - 0.2
+
+SVC_STR_HPARAMS:
+  kernel: "linear"
+
+SVC_FLOAT_HPARAMS:
+  tol: 0.001
+  C: 0.8
+
+# MLPClassifier
+MLP_TUNING_STR_GRID:
+  solver:
+    - 'adam'
+    - 'sgd'
+  activation:
+    - 'tanh'
+    - 'relu'
+    - 'logistic'
+
+MLP_TUNING_INT_GRID:
+  batch_size:
+    - 4
+    - 16
+    - 32
+
+MLP_TUNING_FLOAT_GRID:
+  learning_rate_init:
+    - 0.001
+    - 0.003
+    - 0.01
+  alpha:
+    - 0.00001
+    - 0.0001
+  
+MLP_STR_HPARAMS:
+  solver: 'sgd'
+  activation: 'logistic'
+
+MLP_INT_HPARAMS:
+  batch_size: 32
+
+MLP_FLOAT_HPARAMS:
+  learning_rate_init: 0.01
+  alpha: 0.0001
+
+# Logistic Regression (Baseline)
+LOG_TUNING_STR_GRID:
+  model__penalty:
+    - 'l1'
+    - 'l2'
+
+LOG_TUNING_INT_GRID:
+  max_iter:
+    - 1000
+    - 500
+    - 100
+
+LOG_TUNING_FLOAT_GRID:
+  tol:
+    - 0.0001
+    - 0.001
+    - 0.01
+  C:
+    - 1
+    - 0.5
+    - 0.2
+
+LOG_STR_HPARAMS:
+  penalty: 'l1' # take values [l1, l2]
+  solver: 'liblinear'
+
+LOG_INT_HPARAMS:
+  max_iter: 100
+
+LOG_FLOAT_HPARAMS:
+  tol: 0.001
+  C: 0.8

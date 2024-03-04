@@ -66,10 +66,10 @@ ORDINAL_CATEGORICAL:
 # MODEL
 MODEL_LIST: 
   - 'LogisticRegression' #Baseline Model
-  - "SVC"
+  - 'SVC'
   - 'LGBMClassifier'
   - 'MLPClassifier'
-MODEL_SELECTION: 'LGBMClassifier' # From MODEL_LIST above
+MODEL_SELECTION: 'MLPClassifier' # From MODEL_LIST above
 MODEL_VERSION: '01'
 
 # TRAIN_VALIDATE_TEST_SPLIT SIZE
@@ -161,8 +161,8 @@ MLP_TUNING_FLOAT_GRID:
     - 0.0001
   
 MLP_STR_HPARAMS:
-  solver: 'sgd'
-  activation: 'logistic'
+  solver: 'adam'
+  activation: 'tanh'
 
 MLP_INT_HPARAMS:
   batch_size: 32

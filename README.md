@@ -182,5 +182,7 @@ Recall is used as I want my model to reduce False Positives as much as possible 
 ## **i. Other considerations for deploying the models developed.**
 
 TODO: API Implementation of training/predicting where the model trains on the whole dataset and have predict function to take a testfile as input and make predictions on that file.
+
 TODO: Further selection/filter of features for training the model
+
 TODO: Error handling mechanisms for possible data issues that are not present in this data source.

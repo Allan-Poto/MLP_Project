@@ -3,6 +3,7 @@
 ## **a. Full name (as in NRIC) and email address.**
 
 Full name: Tay Wei Hong, Allan
+
 Email address: <whtay.allan@gmail.com>
 
 ## **b. Overview of the submitted folder and the folder structure.**
@@ -89,7 +90,7 @@ To tune the hyperparameters required for your model, the steps are as follows:
 3. If you wish to add hyperparameters configurations for your NEW models, proceed to step 4 after completing the appropriate additon of configurations here.
 4. (ONLY FOR NEW CONFIGURATIONS) Navigate to [core.py](src/config/core.py) and locate the `ModelConfig` class. Scroll down to the `HYPERPARAMS` segment and add accordingly CONFIGURATION_NAME and the datatype. To be strictly adhered to or there will be an error.
 
-## d. [Description of logical steps/flow of the pipeline](src/pipeline.py)
+## d. Description of logical steps/flow of the pipeline
 
 ### 1. processing_pipeline
 
@@ -129,25 +130,55 @@ The above 3 pipelines are all consolidated in `total_pipeline`, which can be fur
 8. Validation of data into the columns `Start Smoking` and `Age` found inconsistencies where a portion of the patients apparently started smoking from when they are 0 years old!
 9. `Start Smoking` and `Stop Smoking` are ambiguous columns of data by themselves, thus I widely considered them as ideal candidate for feature engineering as well.
 
-## **f. Explanation of your choice of models for each machine learning task.**
+## **f.  Describe how the features in the dataset are processed (summarised in a table).**
+
+| Feature | Type | Processed |
+| - | - | - |
+| ID | Numerical | Omitted |
+| Age | Numerical | Take absolute value. Impute Median if required |
+| Gender | Categorical | Formatted. Impute Mode if required |
+| COPD History | Categorical | ReferenceImputed (refer to feateng.py) |
+| Genetic Markers | Categorical | Impute Mode if required |
+| Air Pollution Exposure | Categorical | Impute Mode if required |
+| Last Weight | Numerical | ReferenceImputed (refer to feateng.py). Omitted after feature_engineered |
+| Current Weight | Numerical | ReferenceImputed (refer to feateng.py). Omitted after feature_engineered |
+| Start Smoking | String | Omitted after feature_engineered |
+| Stop Smoking | String | Omitted after feature_engineered |
+| Taken Bronchodilators | Categorical | ReferenceImputed (refer to feateng.py). Omitted when feature_selection on duplicate is run |
+| Frequency of Tiredness | Categorical | Impute Mode if required |
+| Dominant Hand | Categorical | Impute Mode if required |
+| Lung Cancer Occurrence | Categorical | Target Variable |
+| Change in Weight | Numerical | Engineered_feature after imputation from "Last Weight" and "Current Weight". |
+| Years Smoked | Numerical | Engineered_feature from "Start Smoking" and "Stop Smoking". Omitted after testing with and without. |
+| Cat Smoker | Categorical | Engineered_feature from "Start Smoking" and "Stop Smoking". |
+
+## **g. Explanation of your choice of models for each machine learning task.**
 
 3 models were used for evaluation, SVC (sklearn), MLPClassifier (sklearn), LightGradientBoostingMachine (lightgbm)
 
 1. SVC:
-   - 
-2. MLPClassifier:
-   - 
-3. LightGradientBoostingMachine:
-   - 
+   - Support Vector machine is particularly efficient in this case as we are dealing with a small dataset and thus the amount of training time required is manageable. As it has relatively lesser hyperparameters and a clear decision boundary determined by the training data, it is less likely to overfit to the training data and generalizes well.
 
-## **g. Evaluation of the models developed.**
+2. MLPClassifier:
+   - Neural networks are known to perform quite well in classification tasks and are highly customisable to size and n_features of the dataset we are looking at. MLPClassifier in scikit-learn contain options for regularization which is appropriate here as it was identified during EDA that quite a number of columns have little significance with reference to the target variable.
+
+3. LightGradientBoostingMachine:
+   - In the dataset that we have, there are quite a number of categorical variables, which LGBM can actually handled without any encoding required. In the pipeline I did proceed with encoding in the preprocessing as it is a generalized pipeline for all models, but in a separate case we can customized the pipeline differently. Like MLPClassifier, it offers regularization which is relatively helpful in this case if we can identify the few important features.
+
+## **h. Evaluation of the models developed.**
 
 - SVC
-  - Recall - 
-  - F1 Score - 
+  - Recall - 71.20%
+  - F1 Score - 69.13%
 - MLPClassifier
-  - Recall - 
-  - F1 Score - 
+  - Recall - 86.23%
+  - F1 Score - 76.16%
 - LightGradientBoostingMachine
-  - Recall - 
-  - F1 Score - 
+  - Recall - 82.61%
+  - F1 Score - 77.22%
+
+## **i. Other considerations for deploying the models developed.**
+
+TODO: API Implementation of training/predicting where the model trains on the whole dataset and have predict function to take a testfile as input and make predictions on that file.
+TODO: Further selection/filter of features for training the model
+TODO: Error handling mechanisms for possible data issues that are not present in this data source.

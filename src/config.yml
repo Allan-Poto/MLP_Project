@@ -26,6 +26,7 @@ DROP_FEATURES:
   - 'Stop Smoking'
   - 'Current Weight'
   - 'Last Weight'
+  - 'Years Smoked'
 
 ## IMPUTATION
 IMPUTE_MEDIAN: 
@@ -68,7 +69,7 @@ MODEL_LIST: # Takes values [LGBMClassifier, LogisticRegression]
   - "SVC"
   - 'LGBMClassifier'
   - 'MLPClassifier'
-MODEL_SELECTION: 'MLPClassifier' 
+MODEL_SELECTION: 'LGBMClassifier' 
 MODEL_VERSION: '01'
 
 # TRAIN_VALIDATE_TEST_SPLIT SIZE

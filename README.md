@@ -142,7 +142,7 @@ The above 3 pipelines are all consolidated in `total_pipeline`, which can be fur
 | Frequency of Tiredness | Categorical | Impute Mode if required |
 | Dominant Hand | Categorical | Impute Mode if required |
 | Lung Cancer Occurrence | Categorical | Target Variable |
-| Change in Weight | Numerical | Engineered_feature after imputation from "Last Weight" and "Current Weight". |
+| Change in Weight | Numerical | Engineered_feature from "Last Weight" and "Current Weight". |
 | Years Smoked | Numerical | Engineered_feature from "Start Smoking" and "Stop Smoking". Omitted after testing with and without. |
 | Cat Smoker | Categorical | Engineered_feature from "Start Smoking" and "Stop Smoking". |
 
@@ -170,9 +170,13 @@ The above 3 pipelines are all consolidated in `total_pipeline`, which can be fur
 - LightGradientBoostingMachine
   - Recall - 82.61%
   - F1 Score - 77.22%
+ 
+Recall is used as I want my model to reduce False Positives as much as possible since Lung Cancer treatment or further procedures are rather expensive, it will be a huge expense if there are many false positives. F1_Score on the other hand, other than accounting for False Positives as well, it looks at False Negatives. Lung Cancer if detected early can be treated and managed better, thus I would want to reduce the amount of misses in this case if possible such that they can be detected at early stages before they spread or worsen.
 
 ## **Upcoming updates for the model development**
 
 TODO: API Implementation of training/predicting where the model trains on the whole dataset and have predict function to take a testfile as input and make predictions on that file.
+
 TODO: Further selection/filter of features for training the model
+
 TODO: Error handling mechanisms for possible data issues that are not present in this data source.

@@ -1,14 +1,8 @@
-# README for AISG Submission
+# README
 
-## **a. Full name (as in NRIC) and email address.**
+## **Overview of the folder structure.**
 
-Full name: Tay Wei Hong, Allan
-
-Email address: <whtay.allan@gmail.com>
-
-## **b. Overview of the submitted folder and the folder structure.**
-
-```
+```{}
 root
 ├───.github
 │   └───workflows
@@ -51,13 +45,13 @@ Main Files Breakdown:
 - [requirements.txt](requirements.txt): Dependencies to be downloaded
 - [run.sh](run.sh): Shell script for running the main.py program
 
-## **c. Instructions for executing the pipeline and modifying any parameters.**
+## **Instructions for executing the pipeline and modifying any parameters.**
 
 ### Execution of the pipeline
 
 1. From the root folder, run `pip3 install -r requirements.txt`. This should load up all necessary dependencies for the EDA and for the main program
 
-2. Download the dataset from  <https://techassessment.blob.core.windows.net/aiap16-assessment-data/lung_cancer.db> and place it in the [data folder](src/data/).
+2. Place the dataset in the [data folder](src/data/).
 
 3. Run `./run.sh`. Upon execution of the shell script, it will trigger an execution of the [main.py](src/main.py), which will proceed to train a model on the downloaded dataset using the current configurations set in [config.yml](src/config.yml). The trained model will be stored in the [model folder](src/model/). The program will then proceed to load the model, make predictions on the test data and print out evaluation (recall and F1_Score) for both the training and testing set.
 
@@ -90,7 +84,7 @@ To tune the hyperparameters required for your model, the steps are as follows:
 3. If you wish to add hyperparameters configurations for your NEW models, proceed to step 4 after completing the appropriate additon of configurations here.
 4. (ONLY FOR NEW CONFIGURATIONS) Navigate to [core.py](src/config/core.py) and locate the `ModelConfig` class. Scroll down to the `HYPERPARAMS` segment and add accordingly CONFIGURATION_NAME and the datatype. To be strictly adhered to or there will be an error.
 
-## d. Description of logical steps/flow of the pipeline
+## Description of logical steps/flow of the pipeline
 
 ### 1. processing_pipeline
 
@@ -116,7 +110,7 @@ The above 3 pipelines are all consolidated in `total_pipeline`, which can be fur
 1. Preprocessed the data via the steps above
 2. Fit the selected model on the training data
 
-## **e. Overview of key findings from the EDA**
+## **Overview of key findings from the EDA**
 
 ### Preprocessing and Findings
 
@@ -130,7 +124,7 @@ The above 3 pipelines are all consolidated in `total_pipeline`, which can be fur
 8. Validation of data into the columns `Start Smoking` and `Age` found inconsistencies where a portion of the patients apparently started smoking from when they are 0 years old!
 9. `Start Smoking` and `Stop Smoking` are ambiguous columns of data by themselves, thus I widely considered them as ideal candidate for feature engineering as well.
 
-## **f.  Describe how the features in the dataset are processed (summarised in a table).**
+## **Description of features processed**
 
 | Feature | Type | Processed |
 | - | - | - |
@@ -152,7 +146,7 @@ The above 3 pipelines are all consolidated in `total_pipeline`, which can be fur
 | Years Smoked | Numerical | Engineered_feature from "Start Smoking" and "Stop Smoking". Omitted after testing with and without. |
 | Cat Smoker | Categorical | Engineered_feature from "Start Smoking" and "Stop Smoking". |
 
-## **g. Explanation of your choice of models for each machine learning task.**
+## **Choice of models**
 
 3 models were used for evaluation, SVC (sklearn), MLPClassifier (sklearn), LightGradientBoostingMachine (lightgbm)
 
@@ -165,7 +159,7 @@ The above 3 pipelines are all consolidated in `total_pipeline`, which can be fur
 3. LightGradientBoostingMachine:
    - In the dataset that we have, there are quite a number of categorical variables, which LGBM can actually handled without any encoding required. In the pipeline I did proceed with encoding in the preprocessing as it is a generalized pipeline for all models, but in a separate case we can customized the pipeline differently. Like MLPClassifier, it offers regularization which is relatively helpful in this case if we can identify the few important features.
 
-## **h. Evaluation of the models developed.**
+## **Evaluation of models**
 
 - SVC
   - Recall - 71.20%
@@ -177,7 +171,7 @@ The above 3 pipelines are all consolidated in `total_pipeline`, which can be fur
   - Recall - 82.61%
   - F1 Score - 77.22%
 
-## **i. Other considerations for deploying the models developed.**
+## **Upcoming updates for the model development**
 
 TODO: API Implementation of training/predicting where the model trains on the whole dataset and have predict function to take a testfile as input and make predictions on that file.
 TODO: Further selection/filter of features for training the model
